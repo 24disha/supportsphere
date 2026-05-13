@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"  // 👈 Changed to SQLite
+  url      = "file:./dev.db"  // 👈 Local file
+}
+
+// Same models (no change needed)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(CUSTOMER)
+  companyId String?
+  tickets   Ticket[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Company {
+  id     String @id @default(cuid())
+  name   String
+  users  User[]
+  tickets Ticket[]
+}
+
+model Ticket {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  status      TicketStatus @default(OPEN)
+  priority    Priority    @default(MEDIUM)
+  companyId   String
+  userId      String
+  messages    Message[]
+  company     Company    @relation(fields: [companyId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  isAI      Boolean  @default(false)
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+enum Role { ADMIN SUPPORT CUSTOMER }
+enum TicketStatus { OPEN IN_PROGRESS RESOLVED CLOSED }
+enum Priority { LOW MEDIUM HIGH URGENT }

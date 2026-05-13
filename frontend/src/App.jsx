@@ -1,18 +1,48 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Chat from './pages/Chat';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import { useState, useEffect } from "react";
+
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Loader from "./components/Loader";
 
 function App() {
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+
+    setTimeout(() => {
+
+      setLoading(false);
+
+    }, 2000);
+
+  }, []);
+
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
+
     <BrowserRouter>
+
       <Routes>
+
         <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/chat/:ticketId" element={<Chat />} />
+
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
+
       </Routes>
+
     </BrowserRouter>
+
   );
+
 }
 
 export default App;
